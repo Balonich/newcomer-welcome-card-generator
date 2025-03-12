@@ -27,7 +27,7 @@ builder.Services.Configure<RabbitMQSettings>(
 builder.Services.AddSingleton<ITelegramBotClient>(sp =>
 {
     var settings = sp.GetRequiredService<IOptions<TelegramSettings>>().Value;
-    return new TelegramBotClient(settings.SecretToken);
+    return new TelegramBotClient(settings.BotToken);
 });
 
 // Register CardGenerationQueueProducer
