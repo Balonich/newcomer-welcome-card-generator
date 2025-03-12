@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{D698AC51-4269-4ACD-83E0-150AD6263011}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramCollector", "Services\TelegramCollector\TelegramCollector.csproj", "{FC187C56-4626-41C0-862D-E0804A57B806}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CardGeneration", "CardGeneration", "{EC254022-5B4A-405E-A140-0EA15575DCD8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardGeneration", "Services\CardGeneration\Backend\CardGeneration.csproj", "{91DF81F4-E667-44E0-924B-AFA8C4FF88C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSender", "Services\ImageSender\ImageSender.csproj", "{07FB2F3A-F845-423D-844E-667D76D7F9F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{FA241632-0F38-4CF2-96DF-263286880552}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC187C56-4626-41C0-862D-E0804A57B806}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC187C56-4626-41C0-862D-E0804A57B806}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC187C56-4626-41C0-862D-E0804A57B806}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC187C56-4626-41C0-862D-E0804A57B806}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91DF81F4-E667-44E0-924B-AFA8C4FF88C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91DF81F4-E667-44E0-924B-AFA8C4FF88C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91DF81F4-E667-44E0-924B-AFA8C4FF88C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91DF81F4-E667-44E0-924B-AFA8C4FF88C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07FB2F3A-F845-423D-844E-667D76D7F9F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07FB2F3A-F845-423D-844E-667D76D7F9F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07FB2F3A-F845-423D-844E-667D76D7F9F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07FB2F3A-F845-423D-844E-667D76D7F9F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA241632-0F38-4CF2-96DF-263286880552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA241632-0F38-4CF2-96DF-263286880552}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA241632-0F38-4CF2-96DF-263286880552}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA241632-0F38-4CF2-96DF-263286880552}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FC187C56-4626-41C0-862D-E0804A57B806} = {D698AC51-4269-4ACD-83E0-150AD6263011}
+		{EC254022-5B4A-405E-A140-0EA15575DCD8} = {D698AC51-4269-4ACD-83E0-150AD6263011}
+		{91DF81F4-E667-44E0-924B-AFA8C4FF88C7} = {EC254022-5B4A-405E-A140-0EA15575DCD8}
+		{07FB2F3A-F845-423D-844E-667D76D7F9F6} = {D698AC51-4269-4ACD-83E0-150AD6263011}
+	EndGlobalSection
+EndGlobal
