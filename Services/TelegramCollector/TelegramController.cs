@@ -22,19 +22,19 @@ public class TelegramController : ControllerBase
         _settings = settings.Value;
     }
 
-    [HttpPost("webhook")]
-    public async Task<IActionResult> Post(
-        [FromBody] Update update,
-        [FromHeader(Name = "X-Telegram-Bot-Api-Secret-Token")] string secretToken)
-    {
-        // Validate the secret token
-        if (!string.IsNullOrEmpty(_settings.SecretToken) && secretToken != _settings.SecretToken)
-        {
-            _logger.LogWarning("Invalid secret token received");
-            return Unauthorized();
-        }
+    // [HttpPost("webhook")]
+    // public async Task<IActionResult> Post(
+    //     [FromBody] Update update,
+    //     [FromHeader(Name = "X-Telegram-Bot-Api-Secret-Token")] string secretToken)
+    // {
+    //     // Validate the secret token
+    //     if (!string.IsNullOrEmpty(_settings.SecretToken) && secretToken != _settings.SecretToken)
+    //     {
+    //         _logger.LogWarning("Invalid secret token received");
+    //         return Unauthorized();
+    //     }
 
-        await _telegramDataCollector.HandleUpdateAsync(update);
-        return Ok();
-    }
+    //     await _telegramDataCollector.HandleUpdateAsync(update);
+    //     return Ok();
+    // }
 }

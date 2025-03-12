@@ -35,12 +35,12 @@ The service requires the following configuration in `appsettings.json`:
 
 1. Create a new Telegram Bot using BotFather
 2. Configure the `appsettings.json` with your bot token
-3. Set up a publicly accessible endpoint for the webhook
+3. Set up a publicly accessible endpoint for the webhook OR use long polling
 4. Run the service
 
 ## Development Mode
 
-In development mode, set `WebhookUrl` to null in `appsettings.Development.json` to disable webhook setup.
+In development mode, set `WebhookUrl` to null in `appsettings.Development.json` to disable webhook setup. Long polling will be used instead.
 
 ## Message Format
 

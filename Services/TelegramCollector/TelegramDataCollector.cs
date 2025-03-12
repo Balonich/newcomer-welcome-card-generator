@@ -3,6 +3,7 @@ using Common.Interfaces.Messaging;
 using Common.Models;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -13,6 +14,7 @@ public class TelegramDataCollector : BaseDataCollector
     private readonly ITelegramBotClient _botClient;
     private readonly ILogger<TelegramDataCollector> _logger;
     private readonly TelegramSettings _settings;
+    private CancellationTokenSource? _pollingCts;
 
     public TelegramDataCollector(
         IMessageProducer<NewcomerData> messageProducer,
@@ -29,8 +31,8 @@ public class TelegramDataCollector : BaseDataCollector
     {
         await base.StartAsync();
 
-        // Set webhook only if URL is provided
-        if (!string.IsNullOrEmpty(_settings.WebhookUrl))
+        // Check if webhook URL is provided
+        if (!string.IsNullOrEmpty(_settings.WebhookUrl) && _settings.WebhookUrl.ToLower() != "null")
         {
             _logger.LogInformation("Setting webhook to: {WebhookUrl}", _settings.WebhookUrl);
             await _botClient.SetWebhook(
@@ -40,18 +42,51 @@ public class TelegramDataCollector : BaseDataCollector
         }
         else
         {
-            _logger.LogWarning("Webhook URL not provided. Webhook not set.");
+            _logger.LogInformation("Using long polling mode");
+            await _botClient.DeleteWebhook(); // Make sure webhook is disabled
+            
+            // Start long polling
+            _pollingCts = new CancellationTokenSource();
+            var receiverOptions = new ReceiverOptions
+            {
+                AllowedUpdates = Array.Empty<UpdateType>(), // receive all update types
+                DropPendingUpdates = true // ignore older updates
+            };
+
+            // Start receiving updates
+            _botClient.StartReceiving(
+                updateHandler: HandleUpdateAsync,
+                errorHandler: HandlePollingErrorAsync,
+                receiverOptions: receiverOptions,
+                cancellationToken: _pollingCts.Token
+            );
+            
+            _logger.LogInformation("Started long polling for Telegram updates");
         }
     }
 
     public override async Task StopAsync()
     {
         await base.StopAsync();
-        await _botClient.DeleteWebhook();
-        _logger.LogInformation("Webhook removed");
+        
+        // Stop long polling if active
+        if (_pollingCts != null)
+        {
+            _pollingCts.Cancel();
+            _pollingCts.Dispose();
+            _pollingCts = null;
+            _logger.LogInformation("Stopped long polling");
+        }
+        else
+        {
+            // Remove webhook if we're using webhook mode
+            await _botClient.DeleteWebhook();
+            _logger.LogInformation("Webhook removed");
+        }
     }
 
-    public async Task HandleUpdateAsync(Update update)
+    // Handler for updates from both webhook and long polling
+    public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken = default)
     {
         if (!_isRunning)
         {
@@ -78,7 +113,7 @@ public class TelegramDataCollector : BaseDataCollector
             _logger.LogInformation("Received message: {MessageText}", messageText);
 
             // Process the message to extract newcomer data
-            var newcomerData = await ParseNewcomerDataAsync(message);
+            var newcomerData = await ParseNewcomerDataAsync(message, cancellationToken);
 
             if (newcomerData != null)
             {
@@ -88,7 +123,8 @@ public class TelegramDataCollector : BaseDataCollector
                 // Send confirmation
                 await _botClient.SendMessage(
                     chatId: message.Chat.Id,
-                    text: "Thank you! The newcomer welcome card is being generated.");
+                    text: "Thank you! The newcomer welcome card is being generated.",
+                    cancellationToken: cancellationToken);
             }
         }
         catch (Exception ex)
@@ -97,7 +133,17 @@ public class TelegramDataCollector : BaseDataCollector
         }
     }
 
-    private async Task<NewcomerData?> ParseNewcomerDataAsync(Message message)
+    private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+    {
+        _logger.LogError(exception, "Error while polling for Telegram updates");
+        
+        // Delay before retrying to avoid excessive retries on persistent errors
+        Task.Delay(TimeSpan.FromSeconds(5), cancellationToken).Wait(cancellationToken);
+        
+        return Task.CompletedTask;
+    }
+
+    private async Task<NewcomerData?> ParseNewcomerDataAsync(Message message, CancellationToken cancellationToken = default)
     {
         // This implementation assumes the message follows a specific format or command
         // For example: /newcomer format or a structured message
@@ -115,7 +161,8 @@ public class TelegramDataCollector : BaseDataCollector
             {
                 await _botClient.SendMessage(
                     chatId: message.Chat.Id,
-                    text: "Invalid format. Please use: /newcomer Name|Position|Department|Bio|PhotoUrl|Hobby1,Hobby2");
+                    text: "Invalid format. Please use: /newcomer Name|Position|Department|Bio|PhotoUrl|Hobby1,Hobby2",
+                    cancellationToken: cancellationToken);
                 return null;
             }
 
@@ -132,8 +179,29 @@ public class TelegramDataCollector : BaseDataCollector
 
             return newcomer;
         }
+        else if (text.StartsWith("/help", StringComparison.OrdinalIgnoreCase))
+        {
+            await _botClient.SendMessage(
+                chatId: message.Chat.Id,
+                text: "Welcome to the Newcomer Welcome Card Generator!\n\n" +
+                      "Use the /newcomer command with the following format:\n" +
+                      "/newcomer Name|Position|Department|Bio|PhotoUrl|Hobby1,Hobby2\n\n" +
+                      "Example:\n" +
+                      "/newcomer John Doe|Software Engineer|Engineering|I love coding!|https://example.com/photo.jpg|Coding,Gaming,Hiking",
+                cancellationToken: cancellationToken);
+            return null;
+        }
+        else if (text.StartsWith("/start", StringComparison.OrdinalIgnoreCase))
+        {
+            await _botClient.SendMessage(
+                chatId: message.Chat.Id,
+                text: "Welcome! I'm the Newcomer Welcome Card Generator bot.\n" +
+                      "Use /help to see available commands.",
+                cancellationToken: cancellationToken);
+            return null;
+        }
 
-        // Not a newcomer command
+        // Not a recognized command
         return null;
     }
 }
