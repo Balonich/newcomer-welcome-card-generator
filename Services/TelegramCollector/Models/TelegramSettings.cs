@@ -1,4 +1,4 @@
-namespace TelegramCollector
+namespace TelegramCollector.Models
 {
     public class TelegramSettings
     {

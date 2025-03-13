@@ -4,7 +4,7 @@ using Common.Messaging.RabbitMQ;
 using Common.Models;
 using Microsoft.Extensions.Options;
 
-namespace TelegramCollector
+namespace TelegramCollector.Infrastructure
 {
     public class CardGenerationQueueProducer : RabbitMQProducer<NewcomerData>
     {

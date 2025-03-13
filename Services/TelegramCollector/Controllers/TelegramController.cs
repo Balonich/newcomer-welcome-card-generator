@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Telegram.Bot.Types;
+using TelegramCollector.Models;
+using TelegramCollector.Services.DataCollector;
 
-namespace TelegramCollector;
+namespace TelegramCollector.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
