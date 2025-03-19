@@ -94,19 +94,19 @@ public class TelegramDataCollector : BaseDataCollector
                     break;
 
                 case TelegramMessageTypes.Help:
-                    SendHelpCommandMessageAsync();
+                    await SendHelpCommandMessageAsync(message, cancellationToken);
                     break;
 
                 case TelegramMessageTypes.Start:
-                    SendStartCommandMessageAsync();
+                    await SendStartCommandMessageAsync(message, cancellationToken);
                     break;
 
                 case TelegramMessageTypes.Unknown:
-                    SendUnknownCommandMessageAsync();
+                    await SendUnknownCommandMessageAsync(message, cancellationToken);
                     break;
 
                 default:
-                    SendUnknownCommandMessageAsync();
+                    await SendUnknownCommandMessageAsync(message, cancellationToken);
                     break;
             }
         }
@@ -176,15 +176,15 @@ public class TelegramDataCollector : BaseDataCollector
     private TelegramMessageTypes CheckMessageType(string messageText)
     {
         // Check if this is a newcomer command
-        if (text.StartsWith("/newcomer", StringComparison.OrdinalIgnoreCase))
+        if (messageText.StartsWith("/newcomer", StringComparison.OrdinalIgnoreCase))
         {
             return TelegramMessageTypes.Newcomer;
         }
-        else if (text.StartsWith("/help", StringComparison.OrdinalIgnoreCase))
+        else if (messageText.StartsWith("/help", StringComparison.OrdinalIgnoreCase))
         {
             return TelegramMessageTypes.Help;
         }
-        else if (text.StartsWith("/start", StringComparison.OrdinalIgnoreCase))
+        else if (messageText.StartsWith("/start", StringComparison.OrdinalIgnoreCase))
         {
             return TelegramMessageTypes.Start;
         }
@@ -244,7 +244,7 @@ public class TelegramDataCollector : BaseDataCollector
         return newcomer;
     }
 
-    private async Task SendHelpCommandMessageAsync(Message message)
+    private async Task SendHelpCommandMessageAsync(Message message, CancellationToken cancellationToken = default)
     {
         await _botClient.SendMessage(
             chatId: message.Chat.Id,
@@ -256,7 +256,7 @@ public class TelegramDataCollector : BaseDataCollector
             cancellationToken: cancellationToken);
     }
 
-    private async Task SendStartCommandMessageAsync(Message message)
+    private async Task SendStartCommandMessageAsync(Message message, CancellationToken cancellationToken = default)
     {
         await _botClient.SendMessage(
             chatId: message.Chat.Id,
@@ -265,7 +265,7 @@ public class TelegramDataCollector : BaseDataCollector
             cancellationToken: cancellationToken);
     }
 
-    private async Task SendUnknownCommandMessageAsync(Message message)
+    private async Task SendUnknownCommandMessageAsync(Message message, CancellationToken cancellationToken = default)
     {
         await _botClient.SendMessage(
             chatId: message.Chat.Id,

@@ -4,6 +4,7 @@ using Common.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Telegram.Bot;
+using TelegramCollector.Infrastructure;
 using TelegramCollector.Models;
 using TelegramCollector.Services.DataCollector;
 
